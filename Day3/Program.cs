@@ -47,19 +47,17 @@ int Part1(string filePath)
                 // check if adjacent to bottom left with symbol
                 if (col > 0 && row < rows - 1 && IsSymbol(lines[row + 1][col - 1]))
                     bufferIsNearSymbol = true;
+                continue;
             }
-            else
+            // interrupted by non digit
+            if (buffer.Length > 0 && bufferIsNearSymbol)
             {
-                // interrupted by non digit
-                if (buffer.Length > 0 && bufferIsNearSymbol)
-                {
-                    var partNumber = int.Parse(buffer.ToString());
-                    Console.WriteLine("Identified part number {0}", partNumber);
-                    sum += partNumber;
-                }
-                buffer.Clear();
-                bufferIsNearSymbol = false;
+                var partNumber = int.Parse(buffer.ToString());
+                Console.WriteLine("Identified part number {0}", partNumber);
+                sum += partNumber;
             }
+            buffer.Clear();
+            bufferIsNearSymbol = false;
         }
         // eol
         if (buffer.Length > 0 && bufferIsNearSymbol)
@@ -150,22 +148,19 @@ int Part2(string filePath)
                     symbolRow = row + 1;
                     symbolCol = col - 1;
                 }
-
+                continue;
             }
-            else
+            // interrupted by non digit
+            if (buffer.Length > 0 && symbolRow >= 0 && symbolCol >= 0)
             {
-                // interrupted by non digit
-                if (buffer.Length > 0 && symbolRow >= 0 && symbolCol >= 0)
-                {
-                    var partNumber = int.Parse(buffer.ToString());
-                    Console.WriteLine("Identified part number {0}", partNumber);
-                    var gearId = (symbolRow, symbolCol);
-                    numbers.Add((gearId, partNumber));
-                }
-                buffer.Clear();
-                symbolRow = -1;
-                symbolCol = -1;
+                var partNumber = int.Parse(buffer.ToString());
+                Console.WriteLine("Identified part number {0}", partNumber);
+                var gearId = (symbolRow, symbolCol);
+                numbers.Add((gearId, partNumber));
             }
+            buffer.Clear();
+            symbolRow = -1;
+            symbolCol = -1;
         }
         // eol
         if (buffer.Length > 0 && symbolRow >= 0 && symbolCol >= 0)

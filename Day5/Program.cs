@@ -5,19 +5,19 @@ var blockSeparator = $"{Environment.NewLine}{Environment.NewLine}";
 var splitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
 
 // parses a map section block into map line definitions
-ulong[][] ProcessSection(string sectionText)
+uint[][] ProcessSection(string sectionText)
     => sectionText.Split(Environment.NewLine)
         .Skip(1)
         .Select(line => line.Split(' '))
-        .Select(numberStrings => numberStrings.Select(ulong.Parse).ToArray())
+        .Select(numberStrings => numberStrings.Select(uint.Parse).ToArray())
         .ToArray();
 
-ulong Part1(string filePath)
+uint Part1(string filePath)
 {
     var sections = File.ReadAllText(filePath).Split(blockSeparator, splitOptions);
     var seeds = sections[0].Split(':', StringSplitOptions.TrimEntries)[1]
         .Split(' ')
-        .Select(ulong.Parse)
+        .Select(uint.Parse)
         .ToArray();
 
     var mapper = new Mapper();
@@ -29,7 +29,7 @@ ulong Part1(string filePath)
     return seeds.Select(mapper.Convert).Min();
 }
 
-ulong Part2(string filePath)
+uint Part2(string filePath)
 {
     var startTime = DateTime.Now;
     var sections = File.ReadAllText(filePath)
@@ -37,7 +37,7 @@ ulong Part2(string filePath)
         .ToArray();
     var seeds = sections[0].Split(':', StringSplitOptions.TrimEntries)[1]
         .Split(' ')
-        .Select(ulong.Parse);
+        .Select(uint.Parse);
 
 
     var mapper = new Mapper();
@@ -47,8 +47,8 @@ ulong Part2(string filePath)
     }
 
     var id = 1;
-    var queue = new Queue<ulong>();
-    var ranges = new ConcurrentDictionary<int, (ulong start, ulong length)>();
+    var queue = new Queue<uint>();
+    var ranges = new ConcurrentDictionary<int, (uint start, uint length)>();
     foreach (var seed in seeds)
         queue.Enqueue(seed);
     while (queue.Any())
@@ -69,7 +69,7 @@ ulong Part2(string filePath)
     }
 
     // start threads
-    var minimums = new ConcurrentDictionary<int, ulong?>();
+    var minimums = new ConcurrentDictionary<int, uint?>();
     var progresses = new ConcurrentDictionary<int, ProgressInfo>();
     foreach (var (threadId, (start, length)) in ranges)
     {
@@ -95,14 +95,14 @@ ulong Part2(string filePath)
         {
             _ = minimums.TryGetValue(threadId, out var min);
             Console.SetCursorPosition(0, threadId + 1);
-            Console.WriteLine("Thread {0,-3}:\t{1,6:N2}% {2} | Result: {3,12} | {4:hh\\:mm\\:ss\\:fff} | {5,10} / {6,10}",
+            Console.WriteLine("Thread {0,2:D2} | {1,6:N2}% {2} {3,10} / {4,10} | {5:hh\\:mm\\:ss\\:fff} | Result: {6,10} |",
                 threadId,
                 ((double)progress.Progress / (double)progress.Total) * 100.0,
                 ProgressBar(32, ((double)progress.Progress / (double)progress.Total)),
-                min?.ToString() ?? "-n/a-",
-                (progress.EndTime ?? DateTime.Now) - progress.StartTime,
                 progress.Progress,
-                progress.Total
+                progress.Total,
+                (progress.EndTime ?? DateTime.Now) - progress.StartTime,
+                min?.ToString() ?? "-n/a-"
             );
         }
         Thread.Sleep(100);
@@ -112,14 +112,14 @@ ulong Part2(string filePath)
     foreach (var (threadId, progress) in progresses)
     {
         _ = minimums.TryGetValue(threadId, out var min);
-        Console.WriteLine("Thread {0,-3}:\t{1,6:N2}% {2} | Result: {3,16} | {4:hh\\:mm\\:ss\\:fff} | {5,10} / {6,10}",
+        Console.WriteLine("Thread {0,2:D2} | {1,6:N2}% {2} {3,10} / {4,10} | {5:hh\\:mm\\:ss\\:fff} | Result: {6,10} |",
             threadId,
             ((double)progress.Progress / (double)progress.Total) * 100.0,
             ProgressBar(32, ((double)progress.Progress / (double)progress.Total)),
-            min?.ToString() ?? "-n/a-",
-            progress.EndTime - progress.StartTime,
             progress.Progress,
-            progress.Total
+            progress.Total,
+            (progress.EndTime ?? DateTime.Now) - progress.StartTime,
+            min?.ToString() ?? "-n/a-"
         );
     }
     return minimums.Select(kp => kp.Value).Min()!.Value;
@@ -140,10 +140,10 @@ string ProgressBar(int length, double value)
     return builder.ToString();
 }
 
-ulong Crunch(ulong start, ulong length, Mapper mapper, ref ProgressInfo progress)
+uint Crunch(uint start, uint length, Mapper mapper, ref ProgressInfo progress)
 {
-    var minLoc = ulong.MaxValue;
-    for (ulong i = 0; i < length; ++i)
+    var minLoc = uint.MaxValue;
+    for (uint i = 0; i < length; ++i)
     {
         progress.Progress = i;
         var seed = start + i;
@@ -160,12 +160,12 @@ return;
 
 public class ProgressInfo
 {
-    public ulong Progress { get; set; }
-    public ulong Total { get; set; }
+    public uint Progress { get; set; }
+    public uint Total { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime? EndTime { get; set; }
 
-    public ProgressInfo(ulong total)
+    public ProgressInfo(uint total)
     {
         Progress = 0;
         Total = total;
@@ -175,13 +175,13 @@ public class ProgressInfo
 
 public class Mapper
 {
-    private readonly List<(ulong srt, ulong end, ulong offset)[]> _map = new();
+    private readonly List<(uint srt, uint end, uint offset)[]> _map = new();
 
     public Mapper() { }
 
-    public void Assign(ulong[][] mapperData)
+    public void Assign(uint[][] mapperData)
     {
-        var arr = new (ulong, ulong, ulong)[mapperData.Length];
+        var arr = new (uint, uint, uint)[mapperData.Length];
         for (var i = 0; i < arr.Length; ++i)
         {
             var srcStart = mapperData[i][1];
@@ -196,7 +196,7 @@ public class Mapper
     public void Clear()
         => _map.Clear();
 
-    public ulong Convert(ulong value)
+    public uint Convert(uint value)
     {
         var seed = value;
         foreach (var block in _map)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Text;
+using System.Collections.Concurrent;
 
 var blockSeparator = $"{Environment.NewLine}{Environment.NewLine}";
 var splitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
@@ -88,13 +89,21 @@ ulong Part2(string filePath)
         ThreadPool.GetMaxThreads(out var maxThreads, out _);
         ThreadPool.GetAvailableThreads(out var availableThreads, out _);
         Console.SetCursorPosition(0, 0);
-        Console.WriteLine("Threads: {0} / {1}", maxThreads - availableThreads, maxThreads);
+        Console.WriteLine("Active Threads: {0} / {1}", maxThreads - availableThreads, maxThreads);
         Console.WriteLine("Running for {0:hh\\:mm\\:ss\\:fff}", DateTime.Now - startTime);
         foreach (var (threadId, progress) in progresses)
         {
             _ = minimums.TryGetValue(threadId, out var min);
             Console.SetCursorPosition(0, threadId + 1);
-            Console.WriteLine("Thread {0,-3}:\t{1,6:N2}%\t{2,16}\t{3:hh\\:mm\\:ss\\:fff}", threadId, ((double)progress.Progress / (double)progress.Total) * 100.0, min?.ToString() ?? "-n/a-", (progress.EndTime ?? DateTime.Now) - progress.StartTime);
+            Console.WriteLine("Thread {0,-3}:\t{1,6:N2}% {2} | Result: {3,12} | {4:hh\\:mm\\:ss\\:fff} | {5,10} / {6,10}",
+                threadId,
+                ((double)progress.Progress / (double)progress.Total) * 100.0,
+                ProgressBar(32, ((double)progress.Progress / (double)progress.Total)),
+                min?.ToString() ?? "-n/a-",
+                (progress.EndTime ?? DateTime.Now) - progress.StartTime,
+                progress.Progress,
+                progress.Total
+            );
         }
         Thread.Sleep(100);
     }
@@ -103,9 +112,32 @@ ulong Part2(string filePath)
     foreach (var (threadId, progress) in progresses)
     {
         _ = minimums.TryGetValue(threadId, out var min);
-        Console.WriteLine("Thread {0,-3}:\t{1,6:N2}%\t{2,16}\t{3:hh\\:mm\\:ss\\:fff}", threadId, ((double)progress.Progress / (double)progress.Total) * 100.0, min?.ToString() ?? "-n/a-", progress.EndTime - progress.StartTime);
+        Console.WriteLine("Thread {0,-3}:\t{1,6:N2}% {2} | Result: {3,16} | {4:hh\\:mm\\:ss\\:fff} | {5,10} / {6,10}",
+            threadId,
+            ((double)progress.Progress / (double)progress.Total) * 100.0,
+            ProgressBar(32, ((double)progress.Progress / (double)progress.Total)),
+            min?.ToString() ?? "-n/a-",
+            progress.EndTime - progress.StartTime,
+            progress.Progress,
+            progress.Total
+        );
     }
     return minimums.Select(kp => kp.Value).Min()!.Value;
+}
+
+string ProgressBar(int length, double value)
+{
+    var builder = new StringBuilder();
+    builder.Append('[');
+    for (var i = 0; i < length - 2; ++i)
+        builder.Append(
+            i < Math.Floor(value * length)
+            ? '='
+            : '-'
+        );
+    builder.Append(']');
+
+    return builder.ToString();
 }
 
 ulong Crunch(ulong start, ulong length, Mapper mapper, ref ProgressInfo progress)

@@ -6,7 +6,7 @@
 # Advent Of Code files
 input.txt
 sample.txt
-
+Day*/*.sln
 # User-specific files
 *.rsuser
 *.suo

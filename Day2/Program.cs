@@ -1,6 +1,14 @@
-﻿int Part1(string inputFile)
+﻿using Xapier14.AdventOfCode;
+AdventOfCode.SetYearAndDay(2023, 2);
+
+var input = AdventOfCode.GetInputAsLines();
+
+Console.WriteLine("Part 1: {0}", Part1(input));
+Console.WriteLine("Part 2: {0}", Part2(input));
+return;
+
+int Part1(string[] lines)
 {
-    var lines = File.ReadAllLines(inputFile);
     var limits = new Dictionary<string, int>
     {
         {"red", 12},
@@ -41,9 +49,8 @@
     return idSum;
 }
 
-int Part2(string inputFile)
+int Part2(string[] lines)
 {
-    var lines = File.ReadAllLines(inputFile);
     var powerSum = 0;
 
     foreach (var line in lines)
@@ -89,6 +96,3 @@ int Part2(string inputFile)
 
     return powerSum;
 }
-
-var sum = Part2("input.txt");
-Console.WriteLine(sum);

@@ -1,5 +1,26 @@
 ﻿// https://adventofcode.com/2023/day/1
 using System.Text;
+using Xapier14.AdventOfCode;
+
+AdventOfCode.SetYearAndDay(2023, 1);
+var input = AdventOfCode.GetInputAsLines();
+
+var sum = 0;
+foreach (var line in input)
+{
+    // get digits
+    var firstDigit = GetFirstDigit(line);
+    var lastDigit = GetLastDigit(line);
+
+    // get calibration value
+    var calibrationValue = (firstDigit * 10) + lastDigit;
+
+    sum += calibrationValue;
+}
+
+Console.WriteLine("Sum of all calibration values: {0}", sum);
+return;
+// END
 
 bool HasTextualNumber(string value, out int number, bool reversed = false)
 {
@@ -76,20 +97,3 @@ int GetLastDigit(string value)
 
     return int.MinValue;
 }
-
-// read input
-var lines = File.ReadAllLines("input.txt");
-var sum = 0;
-
-foreach (var line in lines)
-{
-    // get digits
-    var firstDigit = GetFirstDigit(line);
-    var lastDigit = GetLastDigit(line);
-
-    // get calibration value
-    var calibrationValue = (firstDigit * 10) + lastDigit;
-    sum += calibrationValue;
-}
-
-Console.WriteLine("Sum of all calibration values: {0}", sum);

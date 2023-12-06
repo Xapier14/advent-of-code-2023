@@ -1,12 +1,19 @@
-﻿using System.Text;
+﻿using Xapier14.AdventOfCode;
+using System.Text;
+AdventOfCode.SetYearAndDay(2023, 3);
+
+var input = AdventOfCode.GetInputAsLines();
+
+Console.WriteLine("Part 1: {0}", Part1(input));
+Console.WriteLine("Part 2: {0}", Part2(input));
+return;
 
 bool IsSymbol(char c)
     => c != '.' && !char.IsLetterOrDigit(c);
 
-int Part1(string filePath)
+int Part1(string[] lines)
 {
     var sum = 0;
-    var lines = File.ReadAllLines(filePath);
     var cols = lines[0].Length;
     var rows = lines.Length;
 
@@ -53,7 +60,7 @@ int Part1(string filePath)
             if (buffer.Length > 0 && bufferIsNearSymbol)
             {
                 var partNumber = int.Parse(buffer.ToString());
-                Console.WriteLine("Identified part number {0}", partNumber);
+                // Console.WriteLine("Identified part number {0}", partNumber);
                 sum += partNumber;
             }
             buffer.Clear();
@@ -63,7 +70,7 @@ int Part1(string filePath)
         if (buffer.Length > 0 && bufferIsNearSymbol)
         {
             var partNumber = int.Parse(buffer.ToString());
-            Console.WriteLine("Identified part number {0}", partNumber);
+            // Console.WriteLine("Identified part number {0}", partNumber);
             sum += partNumber;
         }
         buffer.Clear();
@@ -73,9 +80,8 @@ int Part1(string filePath)
     return sum;
 }
 
-int Part2(string filePath)
+int Part2(string[] lines)
 {
-    var lines = File.ReadAllLines(filePath);
     var cols = lines[0].Length;
     var rows = lines.Length;
 
@@ -154,7 +160,7 @@ int Part2(string filePath)
             if (buffer.Length > 0 && symbolRow >= 0 && symbolCol >= 0)
             {
                 var partNumber = int.Parse(buffer.ToString());
-                Console.WriteLine("Identified part number {0}", partNumber);
+                // Console.WriteLine("Identified part number {0}", partNumber);
                 var gearId = (symbolRow, symbolCol);
                 numbers.Add((gearId, partNumber));
             }
@@ -166,7 +172,7 @@ int Part2(string filePath)
         if (buffer.Length > 0 && symbolRow >= 0 && symbolCol >= 0)
         {
             var partNumber = int.Parse(buffer.ToString());
-            Console.WriteLine("Identified part number {0}", partNumber);
+            // Console.WriteLine("Identified part number {0}", partNumber);
             var gearId = (symbolRow, symbolCol);
             numbers.Add((gearId, partNumber));
         }
@@ -194,12 +200,10 @@ int Part2(string filePath)
         // gears must have two parts connected
         if (gearParts.Count != 2)
             continue;
-        Console.WriteLine("Identified valid gear {0}. Ratio of {1}.", gearNumber, gearParts[0] * gearParts[1]);
+        // Console.WriteLine("Identified valid gear {0}. Ratio of {1}.", gearNumber, gearParts[0] * gearParts[1]);
         sum += gearParts[0] * gearParts[1];
         gearNumber++;
     }
 
     return sum;
 }
-
-Console.WriteLine(Part2("input.txt"));

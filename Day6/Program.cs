@@ -1,8 +1,15 @@
-﻿using System.Text;
+﻿using Xapier14.AdventOfCode;
+using System.Text;
+AdventOfCode.SetYearAndDay(2023, 6);
 
-(int[], int[]) ParseInput(string filePath)
+var input = AdventOfCode.GetInputAsLines();
+
+Console.WriteLine("Solution: {0}", Part1(input));
+Console.WriteLine("Solution: {0}", Part2(input));
+return;
+
+(int[], int[]) ParseInput(string[] lines)
 {
-    var lines = File.ReadAllLines(filePath);
     if (lines.Length != 2)
         throw new Exception();
     var timeArray = lines[0].Split(' ', StringSplitOptions.RemoveEmptyEntries)
@@ -17,9 +24,9 @@
     return (timeArray, distanceArray);
 }
 
-ulong Part1(string filePath)
+ulong Part1(string[] lines)
 {
-    var (timeArray, distanceArray) = ParseInput(filePath);
+    var (timeArray, distanceArray) = ParseInput(lines);
     var races = timeArray.Length;
 
     ulong raceProduct = 1;
@@ -48,12 +55,11 @@ ulong Part1(string filePath)
     return raceProduct;
 }
 
-ulong Part2(string filePath)
+ulong Part2(string[] lines)
 {
-    var (timeArray, distanceArray) = ParseInput(filePath);
+    var (timeArray, distanceArray) = ParseInput(lines);
     var time = Kern(timeArray);
     var distance = Kern(distanceArray);
-    // var winRange = CalculateWinningRange(time, distance);
     var midPoint = (time + 1) / 2;
     ulong halfSpan = 0;
     ulong midPointOffset = 0;
@@ -81,9 +87,5 @@ ulong Kern(int[] array)
     return ulong.Parse(builder.ToString());
 }
 
-// returns distance traveled
 ulong SimulateGame(ulong raceLength, ulong buttonHoldDuration)
     => (raceLength - buttonHoldDuration) * buttonHoldDuration;
-
-Console.WriteLine("Part 1 Solution: {0}", Part1("input.txt"));
-Console.WriteLine("Part 2 Solution: {0}", Part2("input.txt"));

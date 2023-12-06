@@ -1,20 +1,30 @@
-﻿using System.Text;
+﻿using Xapier14.AdventOfCode;
+using System.Text;
 using System.Collections.Concurrent;
+AdventOfCode.SetYearAndDay(2023, 5);
 
-var blockSeparator = $"{Environment.NewLine}{Environment.NewLine}";
-var splitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
+var input = AdventOfCode.GetInput();
+
+var part1 = Part1(input);
+var part2 = Part2(input);
+
+Console.WriteLine("Part 1: {0}", part1);
+Console.WriteLine("Part 2: {0}", part2);
+return;
 
 // parses a map section block into map line definitions
 uint[][] ProcessSection(string sectionText)
-    => sectionText.Split(Environment.NewLine)
+    => sectionText.Split('\n')
         .Skip(1)
         .Select(line => line.Split(' '))
         .Select(numberStrings => numberStrings.Select(uint.Parse).ToArray())
         .ToArray();
 
-uint Part1(string filePath)
+uint Part1(string input)
 {
-    var sections = File.ReadAllText(filePath).Split(blockSeparator, splitOptions);
+    var blockSeparator = "\n\n";
+    var splitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
+    var sections = input.Split(blockSeparator, splitOptions);
     var seeds = sections[0].Split(':', StringSplitOptions.TrimEntries)[1]
         .Split(' ')
         .Select(uint.Parse)
@@ -29,11 +39,12 @@ uint Part1(string filePath)
     return seeds.Select(mapper.Convert).Min();
 }
 
-uint Part2(string filePath)
+uint Part2(string input)
 {
+    var blockSeparator = "\n\n";
+    var splitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
     var startTime = DateTime.Now;
-    var sections = File.ReadAllText(filePath)
-        .Split(blockSeparator, splitOptions)
+    var sections = input.Split(blockSeparator, splitOptions)
         .ToArray();
     var seeds = sections[0].Split(':', StringSplitOptions.TrimEntries)[1]
         .Split(' ')
@@ -154,9 +165,6 @@ uint Crunch(uint start, uint length, Mapper mapper, ref ProgressInfo progress)
     progress.Progress = length;
     return minLoc;
 }
-
-Console.WriteLine("Solution: {0}", Part2("input.txt"));
-return;
 
 public class ProgressInfo
 {

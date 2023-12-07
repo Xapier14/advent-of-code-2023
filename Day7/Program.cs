@@ -15,8 +15,8 @@ var sample =
     """.Split(Environment.NewLine);
 var input = AdventOfCode.GetInputAsLines();
 
-var part1 = Part1(sample);
-var part2 = Part2(sample);
+var part1 = Part1(input);
+var part2 = Part2(input);
 Console.WriteLine("Part 1: {0}", part1);
 Console.WriteLine("Part 2: {0}", part2);
 return;
@@ -152,7 +152,7 @@ bool IsFullHouseHand(string hand, bool disableJoker = true)
     var hasTwoOfSameCard = index.Any(kp => kp.Value == 2);
     var isFullHouse = hasThreeOfSameCard && hasTwoOfSameCard;
     var hasTwoPairsAndJoker = index.Count(kp => kp.Key != 'a' && kp.Value == 2) == 2
-                              && index.Any(kp => kp.Key == 'a' && kp.Value >= 1)
+                              && index.Any(kp => kp.Key == 'a' && kp.Value == 1)
                               && !disableJoker;
     return isFullHouse || hasTwoPairsAndJoker;
 }
@@ -168,10 +168,10 @@ bool IsThreeOfAKindHand(string hand, bool disableJoker = true)
     var hasThreeOfSameCard = index.Any(kp => kp.Value == 3);
     var hasTwoOfSameCard = index.Any(kp => kp.Value == 2);
     var hasTwoOfSameNonJokerCardAndJoker = index.Any(kp => kp.Key != 'a' && kp.Value == 2)
-                                           && index.Any(kp => kp.Key == 'a' && kp.Value >= 2)
+                                           && index.Any(kp => kp.Key == 'a' && kp.Value >= 1)
                                            && !disableJoker;
     var hasOneOfSameNonJokerCardAndJoker = index.Any(kp => kp.Key != 'a' && kp.Value == 1)
-                                           && index.Any(kp => kp.Key == 'a' && kp.Value >= 3)
+                                           && index.Any(kp => kp.Key == 'a' && kp.Value >= 2)
                                            && !disableJoker;
     var isThreeOfAKind = hasThreeOfSameCard && !hasTwoOfSameCard;
     return isThreeOfAKind
@@ -218,7 +218,7 @@ bool IsPairHand(string hand, bool disableJoker = true)
         || hasOneCardAndJoker;
 }
 
-bool IsHighCardHand(string hand)
+bool IsHighCardHand(string hand, bool disableJoker = true)
 {
     var index = new Dictionary<char, int>();
     foreach (var c in hand)
@@ -226,7 +226,8 @@ bool IsHighCardHand(string hand)
         index.Remove(c, out var oldCount);
         index.Add(c, oldCount + 1);
     }
-    var isHighCardHand = index.All(kp => kp.Value == 1);
+    var isHighCardHand = index.All(kp => kp.Value == 1)
+        && (disableJoker || index.Count(kp => kp is { Key: 'a' }) == 0);
     return isHighCardHand;
 }
 
@@ -295,15 +296,24 @@ int Part1(string[] lines)
     Array.Reverse(highHands);
     Array.Reverse(highBets);
 
-    var allHandsBets = fiveHands.Select((t, i) => (t, fiveBets[i])).ToList();
-    allHandsBets.AddRange(fourHands.Select((t, i) => (t, fourBets[i])));
-    allHandsBets.AddRange(fullHouseHands.Select((t, i) => (t, fullHouseBets[i])));
-    allHandsBets.AddRange(trioHands.Select((t, i) => (t, trioBets[i])));
-    allHandsBets.AddRange(twoPairHands.Select((t, i) => (t, twoPairBets[i])));
-    allHandsBets.AddRange(pairHands.Select((t, i) => (t, pairBets[i])));
-    allHandsBets.AddRange(highHands.Select((t, i) => (t, highBets[i])));
+    var allHandsBets = new List<(string Hand, int Bet)>();
+    for (var i = 0; i < fiveHandsBets.Count; ++i)
+        allHandsBets.Add((fiveHands[i], fiveBets[i]));
+    for (var i = 0; i < fourHandsBets.Count; ++i)
+        allHandsBets.Add((fourHands[i], fourBets[i]));
+    for (var i = 0; i < fullHouseHandsBets.Count; ++i)
+        allHandsBets.Add((fullHouseHands[i], fullHouseBets[i]));
+    for (var i = 0; i < trioHandsBets.Count; ++i)
+        allHandsBets.Add((trioHands[i], trioBets[i]));
+    for (var i = 0; i < twoPairHandsBets.Count; ++i)
+        allHandsBets.Add((twoPairHands[i], twoPairBets[i]));
+    for (var i = 0; i < pairHandsBets.Count; ++i)
+        allHandsBets.Add((pairHands[i], pairBets[i]));
+    for (var i = 0; i < highCardHandsBets.Count; ++i)
+        allHandsBets.Add((highHands[i], highBets[i]));
     var allHands = allHandsBets.ToArray();
     
+    Console.WriteLine("Part 1");
     int totalWinnings = 0;
     for (int i = 0; i < (int)allHands.Length; ++i)
     {
@@ -311,7 +321,6 @@ int Part1(string[] lines)
         var bet = allHands[i].Item2;
         var rank = (int)allHands.Length - i;
         var winning = rank * bet;
-        Console.WriteLine("Hand: {0}, Rank: {1}, Bet: {2}, Winning: {3}", hand, rank, bet, winning);
         totalWinnings += winning;
     }
     
@@ -375,31 +384,40 @@ int Part2(string[] lines)
     Array.Reverse(pairHands);
     Array.Reverse(pairBets);
     
-    var highCardHandsBets = handBets.Where(tuple => IsHighCardHand(tuple.Item1)).ToList();
+    var highCardHandsBets = handBets.Where(tuple => IsHighCardHand(tuple.Item1, false)).ToList();
     highCardHandsBets.ForEach(tuple => handBets.Remove(tuple));
     var highHands = highCardHandsBets.Select(tuple => tuple.Item1).ToArray();
     var highBets = highCardHandsBets.Select(tuple => tuple.Item2).ToArray();
     Array.Sort(highHands, highBets);
     Array.Reverse(highHands);
     Array.Reverse(highBets);
-
-    var allHandsBets = fiveHands.Select((t, i) => (t, fiveBets[i])).ToList();
-    allHandsBets.AddRange(fourHands.Select((t, i) => (t, fourBets[i])));
-    allHandsBets.AddRange(fullHouseHands.Select((t, i) => (t, fullHouseBets[i])));
-    allHandsBets.AddRange(trioHands.Select((t, i) => (t, trioBets[i])));
-    allHandsBets.AddRange(twoPairHands.Select((t, i) => (t, twoPairBets[i])));
-    allHandsBets.AddRange(pairHands.Select((t, i) => (t, pairBets[i])));
-    allHandsBets.AddRange(highHands.Select((t, i) => (t, highBets[i])));
-    var allHands = allHandsBets.ToArray();
     
+    var allHandsBets = new List<(string Hand, int Bet)>();
+    for (var i = 0; i < fiveHandsBets.Count; ++i)
+        allHandsBets.Add((fiveHands[i], fiveBets[i]));
+    for (var i = 0; i < fourHandsBets.Count; ++i)
+        allHandsBets.Add((fourHands[i], fourBets[i]));
+    for (var i = 0; i < fullHouseHandsBets.Count; ++i)
+        allHandsBets.Add((fullHouseHands[i], fullHouseBets[i]));
+    for (var i = 0; i < trioHandsBets.Count; ++i)
+        allHandsBets.Add((trioHands[i], trioBets[i]));
+    for (var i = 0; i < twoPairHandsBets.Count; ++i)
+        allHandsBets.Add((twoPairHands[i], twoPairBets[i]));
+    for (var i = 0; i < pairHandsBets.Count; ++i)
+        allHandsBets.Add((pairHands[i], pairBets[i]));
+    for (var i = 0; i < highCardHandsBets.Count; ++i)
+        allHandsBets.Add((highHands[i], highBets[i]));
+    var allHands = allHandsBets.ToArray();
+
     int totalWinnings = 0;
+    Console.WriteLine("Part 2");
     for (int i = 0; i < (int)allHands.Length; ++i)
     {
         var hand = FromJokerString(allHands[i].Item1);
         var bet = allHands[i].Item2;
         var rank = (int)allHands.Length - i;
         var winning = rank * bet;
-        Console.WriteLine("Hand: {0}, Rank: {1}, Bet: {2}, Winning: {3}", hand, rank, bet, winning);
+        Console.WriteLine("{0} {1}", hand, bet);
         totalWinnings += winning;
     }
     

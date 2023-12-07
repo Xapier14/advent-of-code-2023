@@ -7,6 +7,10 @@
 input.txt
 sample.txt
 Day*/*.sln
+
+# Rider
+.idea/
+
 # User-specific files
 *.rsuser
 *.suo

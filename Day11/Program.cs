@@ -21,7 +21,6 @@ AdventOfCode.Assert(Part1, sample, 374);
 AdventOfCode.Assert(Part2, sample, 82000210);
 Console.WriteLine("Part 1: {0}", Part1(input));
 Console.WriteLine("Part 2: {0}", Part2(input));
-
 return;
 
 void ExpandMap(char[][] map, out long[] expandedRows, out long[] expandedCols)
@@ -37,15 +36,7 @@ void ExpandMap(char[][] map, out long[] expandedRows, out long[] expandedCols)
 
     for (var i = 0; i < map[0].Length; i++)
     {
-        var isAllEmpty = true;
-        for (var j = 0; j < map.Length; ++j)
-        {
-            if (map[j][i] == '.')
-                continue;
-            isAllEmpty = false;
-            break;
-        }
-
+        var isAllEmpty = map.All(line => line[i] == '.');
         if (!isAllEmpty)
             continue;
         cols.Add(i);
@@ -54,21 +45,21 @@ void ExpandMap(char[][] map, out long[] expandedRows, out long[] expandedCols)
     expandedCols = cols.ToArray();
 }
 
-List<(long, long)> FindGalaxies(char[][] map, char galaxy)
+(long, long)[] FindGalaxies(char[][] map, char galaxy)
 {
     var ret = new List<(long, long)>();
     for (var y = 0; y < map.Length; ++y)
         for (var x = 0; x < map[y].Length; ++x)
             if (map[y][x] == galaxy)
                 ret.Add((x, y));
-    return ret;
+    return ret.ToArray();
 }
 
 long Part1(string[] lines)
 {
     var map = lines.Select(line => line.ToCharArray()).ToArray();
     ExpandMap(map, out var expandedRows, out var expandedCols);
-    List<(long X, long Y)> galaxies = FindGalaxies(map, '#');
+    (long X, long Y)[] galaxies = FindGalaxies(map, '#');
     var distances = new List<long>();
     foreach (var coord1 in galaxies)
     {
@@ -88,7 +79,7 @@ long Part2(string[] lines)
 {
     var map = lines.Select(line => line.ToCharArray()).ToArray();
     ExpandMap(map, out var expandedRows, out var expandedCols);
-    List<(long X, long Y)> galaxies = FindGalaxies(map, '#');
+    (long X, long Y)[] galaxies = FindGalaxies(map, '#');
     var distances = new List<long>();
     foreach (var coord1 in galaxies)
     {

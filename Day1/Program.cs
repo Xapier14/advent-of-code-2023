@@ -1,26 +1,34 @@
 ﻿// https://adventofcode.com/2023/day/1
 using System.Text;
 using Xapier14.AdventOfCode;
-
 AdventOfCode.SetYearAndDay(2023, 1);
+
 var input = AdventOfCode.GetInputAsLines();
 
-var sum = 0;
-foreach (var line in input)
-{
-    // get digits
-    var firstDigit = GetFirstDigit(line);
-    var lastDigit = GetLastDigit(line);
+var sample1 =
+    """
+    1abc2
+    pqr3stu8vwx
+    a1b2c3d4e5f
+    treb7uchet
+    """.Split(Environment.NewLine);
+var sample2 =
+    """
+    two1nine
+    eightwothree
+    abcone2threexyz
+    xtwone3four
+    4nineeightseven2
+    zoneight234
+    7pqrstsixteen
+    """.Split(Environment.NewLine);
 
-    // get calibration value
-    var calibrationValue = (firstDigit * 10) + lastDigit;
+AdventOfCode.Assert(Part1, sample1, 142);
+AdventOfCode.Assert(Part2, sample2, 281);
 
-    sum += calibrationValue;
-}
-
-Console.WriteLine("Sum of all calibration values: {0}", sum);
+Console.WriteLine("Part 1: {0}", Part1(input));
+Console.WriteLine("Part 2: {0}", Part2(input));
 return;
-// END
 
 bool HasTextualNumber(string value, out int number, bool reversed = false)
 {
@@ -58,7 +66,7 @@ bool HasTextualNumber(string value, out int number, bool reversed = false)
     return false;
 }
 
-int GetFirstDigit(string value)
+int GetFirstDigit(string value, bool includeText)
 {
     var buffer = new StringBuilder();
 
@@ -69,7 +77,7 @@ int GetFirstDigit(string value)
         {
             return value[i] - '0';
         }
-        if (HasTextualNumber(buffer.ToString(), out var number))
+        if (includeText && HasTextualNumber(buffer.ToString(), out var number))
         {
             return number;
         }
@@ -78,7 +86,7 @@ int GetFirstDigit(string value)
     return int.MinValue;
 }
 
-int GetLastDigit(string value)
+int GetLastDigit(string value, bool includeText)
 {
     var buffer = new StringBuilder();
 
@@ -89,11 +97,41 @@ int GetLastDigit(string value)
         {
             return value[i] - '0';
         }
-        if (HasTextualNumber(buffer.ToString(), out var number, true))
+        if (includeText && HasTextualNumber(buffer.ToString(), out var number, true))
         {
             return number;
         }
     }
 
     return int.MinValue;
+}
+
+long Part1(string[] input)
+{
+    long sum = 0;
+    foreach (var line in input)
+    {
+        var firstDigit = GetFirstDigit(line, false);
+        var lastDigit = GetLastDigit(line, false);
+
+        var calibrationValue = firstDigit * 10 + lastDigit;
+        sum += calibrationValue;
+    }
+
+    return sum;
+}
+
+long Part2(string[] input)
+{
+    long sum = 0;
+    foreach (var line in input)
+    {
+        var firstDigit = GetFirstDigit(line, true);
+        var lastDigit = GetLastDigit(line, true);
+
+        var calibrationValue = firstDigit * 10 + lastDigit;
+        sum += calibrationValue;
+    }
+
+    return sum;
 }

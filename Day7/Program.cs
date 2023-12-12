@@ -13,12 +13,13 @@ var sample =
     KTJJT 220
     QQQJA 483
     """.Split(Environment.NewLine);
-var input = AdventOfCode.GetInputAsLines();
+var input = AdventOfCode.GetInputLines();
 
-var part1 = Part1(input);
-var part2 = Part2(input);
-Console.WriteLine("Part 1: {0}", part1);
-Console.WriteLine("Part 2: {0}", part2);
+Utility.Assert(Part1, sample, 6440);
+Utility.Assert(Part2, sample, 5905);
+
+Console.WriteLine("Part 1: {0}", Part1(input));
+Console.WriteLine("Part 2: {0}", Part2(input));
 return;
 
 string ToPowerString(string rawHand)
@@ -313,7 +314,6 @@ int Part1(string[] lines)
         allHandsBets.Add((highHands[i], highBets[i]));
     var allHands = allHandsBets.ToArray();
     
-    Console.WriteLine("Part 1");
     int totalWinnings = 0;
     for (int i = 0; i < (int)allHands.Length; ++i)
     {
@@ -410,14 +410,12 @@ int Part2(string[] lines)
     var allHands = allHandsBets.ToArray();
 
     int totalWinnings = 0;
-    Console.WriteLine("Part 2");
-    for (int i = 0; i < (int)allHands.Length; ++i)
+    for (int i = 0; i < allHands.Length; ++i)
     {
         var hand = FromJokerString(allHands[i].Item1);
         var bet = allHands[i].Item2;
-        var rank = (int)allHands.Length - i;
+        var rank = allHands.Length - i;
         var winning = rank * bet;
-        Console.WriteLine("{0} {1}", hand, bet);
         totalWinnings += winning;
     }
     

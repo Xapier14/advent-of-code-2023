@@ -3,7 +3,7 @@ using System.Text;
 using Xapier14.AdventOfCode;
 AdventOfCode.SetYearAndDay(2023, 1);
 
-var input = AdventOfCode.GetInputAsLines();
+var input = AdventOfCode.GetInputLines();
 
 var sample1 =
     """
@@ -23,8 +23,8 @@ var sample2 =
     7pqrstsixteen
     """.Split(Environment.NewLine);
 
-AdventOfCode.Assert(Part1, sample1, 142);
-AdventOfCode.Assert(Part2, sample2, 281);
+Utility.Assert(Part1, sample1, 142);
+Utility.Assert(Part2, sample2, 281);
 
 Console.WriteLine("Part 1: {0}", Part1(input));
 Console.WriteLine("Part 2: {0}", Part2(input));

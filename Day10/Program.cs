@@ -1,7 +1,7 @@
 ﻿using Xapier14.AdventOfCode;
 AdventOfCode.SetYearAndDay(2023, 10);
 
-var input = AdventOfCode.GetInputAsLines();
+var input = AdventOfCode.GetInputLines();
 var sample1 =
     """
     .....
@@ -69,17 +69,15 @@ var sample6 =
     L7JLJL-JLJLJL--JLJ.L
     """.Split(Environment.NewLine);
 
-AdventOfCode.Assert(Part1, sample1, 4);
-AdventOfCode.Assert(Part1, sample2, 8);
-AdventOfCode.Assert(Part2, sample3, 4);
-AdventOfCode.Assert(Part2, sample4, 4);
-AdventOfCode.Assert(Part2, sample5, 8);
-AdventOfCode.Assert(Part2, sample6, 10);
+Utility.Assert(Part1, sample1, 4);
+Utility.Assert(Part1, sample2, 8);
+Utility.Assert(Part2, sample3, 4);
+Utility.Assert(Part2, sample4, 4);
+Utility.Assert(Part2, sample5, 8);
+Utility.Assert(Part2, sample6, 10);
 
-var part1 = Part1(input);
-Console.WriteLine("Part 1: {0}", part1);
-var part2 = Part2(input);
-Console.WriteLine("Part 2: {0}", part2);
+Console.WriteLine("Part 1: {0}", Part1(input));
+Console.WriteLine("Part 2: {0}", Part2(input));
 
 return;
 

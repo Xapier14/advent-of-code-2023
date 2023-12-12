@@ -2,7 +2,7 @@
 using System.Text;
 AdventOfCode.SetYearAndDay(2023, 3);
 
-var input = AdventOfCode.GetInputAsLines();
+var input = AdventOfCode.GetInputLines();
 
 Console.WriteLine("Part 1: {0}", Part1(input));
 Console.WriteLine("Part 2: {0}", Part2(input));

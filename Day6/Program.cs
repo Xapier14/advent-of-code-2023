@@ -2,10 +2,10 @@
 using System.Text;
 AdventOfCode.SetYearAndDay(2023, 6);
 
-var input = AdventOfCode.GetInputAsLines();
+var input = AdventOfCode.GetInputLines();
 
-Console.WriteLine("Solution: {0}", Part1(input));
-Console.WriteLine("Solution: {0}", Part2(input));
+Console.WriteLine("Part 1: {0}", Part1(input));
+Console.WriteLine("Part 2: {0}", Part2(input));
 return;
 
 (int[], int[]) ParseInput(string[] lines)

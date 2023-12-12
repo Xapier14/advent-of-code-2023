@@ -7,32 +7,15 @@ var sample =
     1 3 6 10 15 21
     10 13 16 21 30 45
     """.Split(Environment.NewLine);
-const int control1 = 114;
-const int control2 = 2;
 
+var input = AdventOfCode.GetInputLines();
 
-var input = AdventOfCode.GetInputAsLines();
+Utility.Assert(Part1, sample, 114);
+Utility.Assert(Part2, sample, 2);
 
-PassSample(Part1, sample, control1);
-PassSample(Part2, sample, control2);
-
-var part1 = Part1(input);
-var part2 = Part2(input);
-Console.WriteLine("Part 1: {0}", part1);
-Console.WriteLine("Part 2: {0}", part2);
+Console.WriteLine("Part 1: {0}", Part1(input));
+Console.WriteLine("Part 2: {0}", Part2(input));
 return;
-
-void PassSample(Func<string[], long> func, string[] input, int control)
-{
-    var sample = func(input);
-    if (sample != control)
-    {
-        Console.WriteLine("Sample fail: {0} actual, {1} expected.", sample, control);
-        Environment.Exit(-1);
-    }
-
-    Console.WriteLine("Sample passed.");
-}
 
 long PredictNext(long[] input)
 {

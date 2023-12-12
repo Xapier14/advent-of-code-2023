@@ -13,7 +13,6 @@ var part1Sample1 =
     GGG = (GGG, GGG)
     ZZZ = (ZZZ, ZZZ)
     """.Split(Environment.NewLine);
-var part1Control1 = 2;
 var part1Sample2 =
     """
     LLR
@@ -22,8 +21,7 @@ var part1Sample2 =
     BBB = (AAA, ZZZ)
     ZZZ = (ZZZ, ZZZ)
     """.Split(Environment.NewLine);
-var part1Control2 = 6;
-var part2Sample =
+var part2Sample1 =
     """
     LR
 
@@ -36,30 +34,17 @@ var part2Sample =
     22Z = (22B, 22B)
     XXX = (XXX, XXX)
     """.Split(Environment.NewLine);
-var part2Control = 6;
 
-var input = AdventOfCode.GetInputAsLines();
+var input = AdventOfCode.GetInputLines();
 
-PassSample(Part1, part1Sample1, part1Control1);
-PassSample(Part1, part1Sample2, part1Control2);
-PassSample(Part2, part2Sample, part2Control);
+Utility.Assert(Part1, part1Sample1, 2);
+Utility.Assert(Part1, part1Sample2, 6);
+Utility.Assert(Part2, part2Sample1, 6);
 
 Console.WriteLine("Part 1: {0}", Part1(input));
 Console.WriteLine("Part 2: {0}", Part2(input));
-
 return;
 
-void PassSample(Func<string[], long> func, string[] input, int control)
-{
-    var sample = func(input);
-    if (sample != control)
-    {
-        Console.WriteLine("Sample fail: {0} actual, {1} expected.", sample, control);
-        Environment.Exit(-1);
-    }
-
-    Console.WriteLine("Sample passed.");
-}
 long Part1(string[] lines)
 {
     var path = lines[0].Trim();

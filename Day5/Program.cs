@@ -3,13 +3,10 @@ using System.Text;
 using System.Collections.Concurrent;
 AdventOfCode.SetYearAndDay(2023, 5);
 
-var input = AdventOfCode.GetInput();
+var input = AdventOfCode.GetInputText();
 
-var part1 = Part1(input);
-var part2 = Part2(input);
-
-Console.WriteLine("Part 1: {0}", part1);
-Console.WriteLine("Part 2: {0}", part2);
+Console.WriteLine("Part 1: {0}", Part1(input));
+Console.WriteLine("Part 2: {0}", Part2(input));
 return;
 
 // parses a map section block into map line definitions

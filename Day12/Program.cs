@@ -1,4 +1,5 @@
-﻿using Xapier14.AdventOfCode;
+﻿using System.Collections.Immutable;
+using Xapier14.AdventOfCode;
 AdventOfCode.SetYearAndDay(2023, 12);
 
 var input = AdventOfCode.GetInputLines(true);
@@ -13,10 +14,7 @@ var sample =
     ?###???????? 3,2,1
     """.Split(Environment.NewLine);
 
-var cache = new Dictionary<string, string[]>();
-
-var combi = GenerateCombinations("?###????????");
-var count = combi.Where(str => MatchesContiguousGroups(str, new[] {3, 2, 1}));
+var cache = new Dictionary<string, long>();
 
 Utility.Assert(Part1, sample, 21);
 Utility.Assert(Part2, sample, 525152);
@@ -25,113 +23,76 @@ Console.WriteLine("Part 1: {0}", Part1(input));
 Console.WriteLine("Part 2: {0}", Part2(input));
 return;
 
-// string[] GenerateAllCombinations(string template)
-// {
-//     var ret = new List<string>();
-//     foreach (var VARIABLE in template)
-//     {
-//         
-//     }
-//     return ret.ToArray();
-// }
-string[] GenerateCombinations(string template)
+long Navigate(string line, ImmutableStack<int> groups)
 {
-    if (template.Length == 0)
-        return Array.Empty<string>();
-    if (template.Length == 1)
-        return template[0] != '?'
-            ? new[] { $"{template[0]}" }
-            : new[] { ".", "#" };
-    var ret = new List<string>();
-    var firstIndex = template[0];
-    var subString = template[1..];
-    if (firstIndex != '?')
+    var id = $"{line}-{string.Join(',', groups.Select(group => group.ToString()))}";
+    if (cache.TryGetValue(id, out var result))
+        return result;
+    char? token = line.Length > 0 ? line[0] : null;
+    result = token switch
     {
-        var subCombinations = GenerateCombinations(subString);
-        foreach (var subCombination in subCombinations)
-        {
-            ret.Add($"{firstIndex}{subCombination}");
-        }
-    }
-    else
-    {
-        var subCombinations = GenerateCombinations(subString);
-        foreach (var subCombination in subCombinations)
-        {
-            ret.Add($".{subCombination}");
-            ret.Add($"#{subCombination}");
-        }
-    }
-
-    return ret.ToArray();
+        '.' => Navigate(line[1..], groups),
+        '#' => NavigatePositive(line, groups),
+        '?' => Navigate($".{line[1..]}", groups) + Navigate($"#{line[1..]}", groups),
+        _ => groups.IsEmpty ? 1 : 0
+    };
+    cache[id] = result;
+    return result;
 }
 
-bool MatchesContiguousGroups(string line, int[] groups)
+long NavigatePositive(string line, ImmutableStack<int> groups)
 {
-    var group = 0;
-    var counter = 0;
-    for (var i = 0; i < line.Length; ++i)
+    if (groups.IsEmpty)
+        return 0;
+    var group = groups.Peek();
+    groups = groups.Pop();
+
+    var rest = 0;
+    for (var i = 0; i < line.Length && i < group; ++i)
     {
-        if (line[i] == '#')
-        {
-            if (group >= groups.Length)
-                return false;
-            counter++;
+        if (line[i] == '.')
             continue;
-         }
-        if (counter == 0)
-            continue;
-        if (counter != groups[group])
-            return false;
-        group++;
-        counter = 0;
+        rest++;
     }
 
-    if (counter != 0)
-    {
-        if (counter != groups[group])
-            return false;
-        group++;
-    }
-
-    return group == groups.Length;
+    if (rest < group)
+        return 0;
+    if (line.Length == rest)
+        return Navigate("", groups);
+    return line[rest] == '#'
+        ? 0
+        : Navigate(line[(rest+1)..], groups);
 }
 
 long Part1(string[] lines)
 {
-    var templates = new List<(string Template, int[] Groups, string[] Combinations)>();
+    long sum = 0;
     foreach (var line in lines)
     {
         var template = line.Split(' ')[0];
         var groups = line.Split(' ')[1].Split(',').Select(int.Parse).ToArray();
-        var combinations = GenerateCombinations(template);
-        templates.Add((template, groups, combinations));
+        var stack = ImmutableStack<int>.Empty;
+        for (var i = groups.Length - 1; i >= 0; i--)
+            stack = stack.Push(groups[i]);
+        sum += Navigate(template, stack);
     }
-
-    var validLines = templates.Select(template =>
-        template.Combinations.Count(line => MatchesContiguousGroups(line, template.Groups)));
     
-    return validLines.Sum();
+    return sum;
 }
 
 long Part2(string[] lines)
 {
-    var templates = new List<(string Template, int[] Groups, string[] Combinations)>();
-    var ic = 1;
     long sum = 0;
     foreach (var line in lines)
     {
         var template = line.Split(' ')[0];
         var explodedTemplate = $"{template}?{template}?{template}?{template}?{template}";
-        var groups = line.Split(' ')[1].Split(',').Select(int.Parse).ToArray();
-        Console.WriteLine("Expanding line {0} / {1}", ic, lines.Length);
-        var combinations = GenerateCombinations(explodedTemplate);
-        Console.WriteLine("Filtering...");
-        var add = combinations.Count(l => MatchesContiguousGroups(line, groups));
-        Console.WriteLine("Result: {0} {1}", template, add);
-        ic++;
-        sum += add;
-        templates.Add((template, groups, combinations)); 
+        var rawGroups = line.Split(' ')[1].Split(',').Select(int.Parse).ToArray();
+        var stack = ImmutableStack<int>.Empty;
+        for (var r = 0; r < 5; ++r)
+            for (var i = rawGroups.Length - 1; i >= 0; i--)
+                stack = stack.Push(rawGroups[i]);
+        sum += Navigate(explodedTemplate, stack);
     };
     
     return sum;

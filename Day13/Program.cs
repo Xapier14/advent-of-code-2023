@@ -178,12 +178,6 @@ long Part2(string text)
         SplitLines(mirror, out var hLines, out var vLines);
         var vSymmetry = HasSymmetryWithSmudge(hLines, out var lSplit);
         var hSymmetry = HasSymmetryWithSmudge(vLines, out var tSplit);
-        if (!vSymmetry && !hSymmetry)
-        {
-            Console.WriteLine("No symmetry found!");
-            vSymmetry = HasSymmetryWithSmudge(hLines, out lSplit);
-            hSymmetry = HasSymmetryWithSmudge(vLines, out tSplit);
-        }
         if (vSymmetry)
             total += lSplit * 100;
         if (hSymmetry)

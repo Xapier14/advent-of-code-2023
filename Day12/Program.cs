@@ -2,7 +2,7 @@
 using Xapier14.AdventOfCode;
 AdventOfCode.SetYearAndDay(2023, 12);
 
-var input = AdventOfCode.GetInputLines(true);
+var input = AdventOfCode.GetInputLines();
 
 var sample =
     """

@@ -44,52 +44,9 @@ void ProcessBeam(char[][] map, bool[][][] heatMap, int x, int y, Direction beamD
         return;
     heatMap[y][x][(int)beamDirection] = true;
     var tile = map[y][x];
-    if (tile == '.')
+    switch (tile)
     {
-        switch (beamDirection)
-        {
-            case Direction.N:
-                queue.Enqueue((x, y - 1, beamDirection));
-                break;
-            case Direction.S:
-                queue.Enqueue((x, y + 1, beamDirection));
-                break;
-            case Direction.W:
-                queue.Enqueue((x - 1, y, beamDirection));
-                break;
-            case Direction.E:
-                queue.Enqueue((x + 1, y, beamDirection));
-                break;
-        }
-        return;
-    }
-
-    if (tile == '-')
-    {
-        if (beamDirection is Direction.E or Direction.W)
-        {
-            switch (beamDirection)
-            {
-                case Direction.W:
-                    queue.Enqueue((x - 1, y, beamDirection));
-                    break;
-                case Direction.E:
-                    queue.Enqueue((x + 1, y, beamDirection));
-                    break;
-            }
-        }
-        else
-        {
-            queue.Enqueue((x - 1, y, Direction.W));
-            queue.Enqueue((x + 1, y, Direction.E));
-        }
-        return;
-    }
-
-    if (tile == '|')
-    {
-        if (beamDirection is Direction.N or Direction.S)
-        {
+        case '.':
             switch (beamDirection)
             {
                 case Direction.N:
@@ -98,60 +55,82 @@ void ProcessBeam(char[][] map, bool[][][] heatMap, int x, int y, Direction beamD
                 case Direction.S:
                     queue.Enqueue((x, y + 1, beamDirection));
                     break;
+                case Direction.W:
+                    queue.Enqueue((x - 1, y, beamDirection));
+                    break;
+                case Direction.E:
+                    queue.Enqueue((x + 1, y, beamDirection));
+                    break;
             }
-        }
-        else
-        {
-            queue.Enqueue((x, y - 1, Direction.N));
-            queue.Enqueue((x, y + 1, Direction.S));
-        }
-
-        return;
+            return;
+        case '-':
+            switch (beamDirection)
+            {
+                case Direction.W:
+                    queue.Enqueue((x - 1, y, beamDirection));
+                    break;
+                case Direction.E:
+                    queue.Enqueue((x + 1, y, beamDirection));
+                    break;
+                default: 
+                    queue.Enqueue((x - 1, y, Direction.W));
+                    queue.Enqueue((x + 1, y, Direction.E));
+                    break;
+            }
+            return;
+        case '|':
+            switch (beamDirection)
+            {
+                case Direction.N:
+                    queue.Enqueue((x, y - 1, beamDirection));
+                    break;
+                case Direction.S:
+                    queue.Enqueue((x, y + 1, beamDirection));
+                    break;
+                default:
+                    queue.Enqueue((x, y - 1, Direction.N));
+                    queue.Enqueue((x, y + 1, Direction.S));
+                    break;
+            }
+            return;
+        case '\\':
+            switch (beamDirection)
+            {
+                case Direction.N:
+                    queue.Enqueue((x - 1, y, Direction.W));
+                    break;
+                case Direction.S:
+                    queue.Enqueue((x + 1, y, Direction.E));
+                    break;
+                case Direction.W:
+                    queue.Enqueue((x, y - 1, Direction.N));
+                    break;
+                case Direction.E:
+                    queue.Enqueue((x, y + 1, Direction.S));
+                    break;
+            }
+            return;
+        case '/':
+            switch (beamDirection)
+            {
+                case Direction.N:
+                    queue.Enqueue((x + 1, y, Direction.E));
+                    break;
+                case Direction.S:
+                    queue.Enqueue((x - 1, y, Direction.W));
+                    break;
+                case Direction.W:
+                    queue.Enqueue((x, y + 1, Direction.S));
+                    break;
+                case Direction.E:
+                    queue.Enqueue((x, y - 1, Direction.N));
+                    break;
+            }
+            return;
+        default:
+            Console.WriteLine("Unknown tile.");
+            break;
     }
-
-    if (tile == '\\')
-    {
-        switch (beamDirection)
-        {
-            case Direction.N:
-                queue.Enqueue((x - 1, y, Direction.W));
-                break;
-            case Direction.S:
-                queue.Enqueue((x + 1, y, Direction.E));
-                break;
-            case Direction.W:
-                queue.Enqueue((x, y - 1, Direction.N));
-                break;
-            case Direction.E:
-                queue.Enqueue((x, y + 1, Direction.S));
-                break;
-        }
-
-        return;
-    }
-
-    if (tile == '/')
-    {
-        switch (beamDirection)
-        {
-            case Direction.N:
-                queue.Enqueue((x + 1, y, Direction.E));
-                break;
-            case Direction.S:
-                queue.Enqueue((x - 1, y, Direction.W));
-                break;
-            case Direction.W:
-                queue.Enqueue((x, y + 1, Direction.S));
-                break;
-            case Direction.E:
-                queue.Enqueue((x, y - 1, Direction.N));
-                break;
-        }
-
-        return;
-    }
-
-    Console.WriteLine("Unknown tile.");
 }
 
 long Part1(string[] lines)

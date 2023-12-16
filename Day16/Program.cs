@@ -24,7 +24,7 @@ Console.WriteLine("Part 1: {0}", Part1(input));
 Console.WriteLine("Part 2: {0}", Part2(input));
 return;
 
-void StartBeam(char[][] map, int[][][] heatMaps, int startX, int startY, Direction startDirection)
+void StartBeam(char[][] map, bool[][][] heatMaps, int startX, int startY, Direction startDirection)
 {
     var queue = new Queue<(int, int, Direction)>();
     queue.Enqueue((startX, startY, startDirection));
@@ -35,14 +35,14 @@ void StartBeam(char[][] map, int[][][] heatMaps, int startX, int startY, Directi
     }
 }
 
-void ProcessBeam(char[][] map, int[][][] heatMap, int x, int y, Direction beamDirection, Queue<(int, int, Direction)> queue)
+void ProcessBeam(char[][] map, bool[][][] heatMap, int x, int y, Direction beamDirection, Queue<(int, int, Direction)> queue)
 {
     if (x < 0 || x >= map[0].Length ||
         y < 0 || y >= map.Length)
         return;
-    if (heatMap[y][x][(int)beamDirection] > 1)
+    if (heatMap[y][x][(int)beamDirection])
         return;
-    heatMap[y][x][(int)beamDirection] += 1;
+    heatMap[y][x][(int)beamDirection] = true;
     var tile = map[y][x];
     if (tile == '.')
     {
@@ -157,39 +157,35 @@ void ProcessBeam(char[][] map, int[][][] heatMap, int x, int y, Direction beamDi
 long Part1(string[] lines)
 {
     var map = lines.Select(line => line.ToCharArray()).ToArray();
-    var heatMap = new int[map.Length][][];
+    var heatMap = new bool[map.Length][][];
     for (var i = 0; i < map.Length; ++i)
     {
-        heatMap[i] = new int[map[i].Length][];
+        heatMap[i] = new bool[map[i].Length][];
         for (var j = 0; j < heatMap[i].Length; ++j)
         {
-            var tileMap = new int[4];
-            tileMap[(int)Direction.N] = 0;
-            tileMap[(int)Direction.S] = 0;
-            tileMap[(int)Direction.E] = 0;
-            tileMap[(int)Direction.W] = 0;
+            var tileMap = new bool[4];
             heatMap[i][j] = tileMap;
         }
     }
     StartBeam(map, heatMap, 0, 0, Direction.E);
-    return heatMap.Sum(line => line.Count(tile => tile.Any(count => count > 0)));
+    return heatMap.Sum(line => line.Count(tile => tile.Any(status => status)));
 }
 
 long Part2(string[] lines)
 {
     var map = lines.Select(line => line.ToCharArray()).ToArray();
-    var heatMaps = new List<(int[][][], int, int, Direction)>();
+    var heatMaps = new List<(bool[][][], int, int, Direction)>();
     for (var y = 0; y < map.Length; ++y)
     {
-        var heatMapE = new int[map.Length][][];
-        var heatMapW = new int[map.Length][][];
+        var heatMapE = new bool[map.Length][][];
+        var heatMapW = new bool[map.Length][][];
         heatMaps.Add((heatMapE, 0, y, Direction.E));
         heatMaps.Add((heatMapW, map[y].Length - 1, y, Direction.W));
     }
     for (var x = 0; x < map[0].Length; ++x)
     {
-        var heatMapS = new int[map.Length][][];
-        var heatMapN = new int[map.Length][][];
+        var heatMapS = new bool[map.Length][][];
+        var heatMapN = new bool[map.Length][][];
         heatMaps.Add((heatMapS, x, 0, Direction.S));
         heatMaps.Add((heatMapN, x, map.Length - 1, Direction.N));
     }
@@ -199,19 +195,15 @@ long Part2(string[] lines)
     {
         for (var i = 0; i < map.Length; ++i)
         {
-            heatMap[i] = new int[map[i].Length][];
+            heatMap[i] = new bool[map[i].Length][];
             for (var j = 0; j < heatMap[i].Length; ++j)
             {
-                var tileMap = new int[4];
-                tileMap[(int)Direction.N] = 0;
-                tileMap[(int)Direction.S] = 0;
-                tileMap[(int)Direction.E] = 0;
-                tileMap[(int)Direction.W] = 0;
+                var tileMap = new bool[4];
                 heatMap[i][j] = tileMap;
             }
         }
         StartBeam(map, heatMap, x, y, direction);
-        var result = heatMap.Sum(line => line.Count(tile => tile.Any(count => count > 0)));
+        var result = heatMap.Sum(line => line.Count(tile => tile.Any(status => status)));
         results.Add(result);
     }
     return results.Max();

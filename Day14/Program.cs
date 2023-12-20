@@ -262,11 +262,6 @@ long Part2(string[] lines)
         p2 += 1;
         distance += 1;
     }
-    
-    Console.WriteLine("Cycle distance: {0}, offset {1}", distance, offset);
-    for (var i = 0; i < 25; ++i)
-        Console.Write("{0} ", history[i]);
-    Console.WriteLine();
     var result = (1000000000 - offset) % distance;
 
     return history[result + offset - 1];

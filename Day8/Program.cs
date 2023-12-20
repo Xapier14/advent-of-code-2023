@@ -100,7 +100,7 @@ long Part2(string[] lines)
     var currentNodes = currentNodeList.ToArray();
     
     var moves = 0;
-    var endNodeMoves = new double[currentNodes.Length];
+    var endNodeMoves = new long[currentNodes.Length];
     Array.Fill(endNodeMoves, -1);
     while (endNodeMoves.Any(length => length < 0))
     {
@@ -127,11 +127,7 @@ long Part2(string[] lines)
         }
     }
 
-    var lcm = endNodeMoves[0];
-    var skipped = endNodeMoves.Skip(1);
-    lcm = skipped.Aggregate(lcm, Lcm);
-
-    return (long)lcm;
+    return Utility.Lcm(endNodeMoves.ToArray());
 }
 
 void BuildNodes(Dictionary<string, (Node Node, string[] Children)> dictionary)
@@ -145,22 +141,6 @@ void BuildNodes(Dictionary<string, (Node Node, string[] Children)> dictionary)
         if (children[1] != nodeName)
             node.RightNode = dictionary[children[1]].Node;
     }
-}
-
-double Gcf(double a, double b)
-{
-    while (b != 0)
-    {
-        var temp = b;
-        b = a % b;
-        a = temp;
-    }
-    return a;
-}
-
-double Lcm(double a, double b)
-{
-    return (a / Gcf(a, b)) * b;
 }
 
 public class Node

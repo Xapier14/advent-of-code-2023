@@ -170,30 +170,6 @@ class Machine
         }
     }
 
-    private long Gcf(long a, long b)
-    {
-        while (b != 0)
-        {
-            long temp = b;
-            b = a % b;
-            a = temp;
-        }
-        return a;
-    }
-
-    private long Lcm(long a, long b)
-    {
-        return (a / Gcf(a, b)) * b;
-    }
-
-    private long LcmArray(long[] values)
-    {
-        var lcm = Lcm(values[0], values[1]);
-        for (var i = 2; i < values.Length; i++)
-            lcm = Lcm(values[i], lcm);
-        return lcm;
-    }
-
     public long RxLoop()
     {
         var count = 1L;
@@ -235,7 +211,7 @@ class Machine
             count++;
         }
 
-        return LcmArray(cycles.Values.ToArray());
+        return Utility.Lcm(cycles.Values.ToArray());
     }
 }
 

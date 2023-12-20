@@ -4,6 +4,23 @@ AdventOfCode.SetYearAndDay(2023, 3);
 
 var input = AdventOfCode.GetInputLines();
 
+var sample =
+    """
+    467..114..
+    ...*......
+    ..35..633.
+    ......#...
+    617*......
+    .....+.58.
+    ..592.....
+    ......755.
+    ...$.*....
+    .664.598..
+    """.Split(Environment.NewLine);
+
+Utility.Assert(Part1, sample, 4361);
+Utility.Assert(Part2, sample, 467835);
+
 Console.WriteLine("Part 1: {0}", Part1(input));
 Console.WriteLine("Part 2: {0}", Part2(input));
 return;

@@ -5,6 +5,47 @@ AdventOfCode.SetYearAndDay(2023, 5);
 
 var input = AdventOfCode.GetInputText();
 
+var sample =
+    """
+    seeds: 79 14 55 13
+
+    seed-to-soil map:
+    50 98 2
+    52 50 48
+
+    soil-to-fertilizer map:
+    0 15 37
+    37 52 2
+    39 0 15
+
+    fertilizer-to-water map:
+    49 53 8
+    0 11 42
+    42 0 7
+    57 7 4
+
+    water-to-light map:
+    88 18 7
+    18 25 70
+
+    light-to-temperature map:
+    45 77 23
+    81 45 19
+    68 64 13
+
+    temperature-to-humidity map:
+    0 69 1
+    1 0 69
+
+    humidity-to-location map:
+    60 56 37
+    56 93 4
+    """;
+
+Utility.Assert(Part1, sample, 35u);
+Utility.Assert(Part2, sample, 46u);
+
+Console.Clear();
 Console.WriteLine("Part 1: {0}", Part1(input));
 Console.WriteLine("Part 2: {0}", Part2(input));
 return;
@@ -21,7 +62,7 @@ uint Part1(string input)
 {
     var blockSeparator = "\n\n";
     var splitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
-    var sections = input.Split(blockSeparator, splitOptions);
+    var sections = input.ReplaceLineEndings("\n").Split(blockSeparator, splitOptions);
     var seeds = sections[0].Split(':', StringSplitOptions.TrimEntries)[1]
         .Split(' ')
         .Select(uint.Parse)
@@ -41,12 +82,11 @@ uint Part2(string input)
     var blockSeparator = "\n\n";
     var splitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
     var startTime = DateTime.Now;
-    var sections = input.Split(blockSeparator, splitOptions)
+    var sections = input.ReplaceLineEndings("\n").Split(blockSeparator, splitOptions)
         .ToArray();
     var seeds = sections[0].Split(':', StringSplitOptions.TrimEntries)[1]
         .Split(' ')
         .Select(uint.Parse);
-
 
     var mapper = new Mapper();
     for (var j = 1; j < sections.Length; ++j)
@@ -182,8 +222,6 @@ public class Mapper
 {
     private readonly List<(uint srt, uint end, uint offset)[]> _map = new();
 
-    public Mapper() { }
-
     public void Assign(uint[][] mapperData)
     {
         var arr = new (uint, uint, uint)[mapperData.Length];
@@ -198,9 +236,6 @@ public class Mapper
         _map.Add(arr);
     }
 
-    public void Clear()
-        => _map.Clear();
-
     public uint Convert(uint value)
     {
         var seed = value;
@@ -209,11 +244,10 @@ public class Mapper
             for (var i = 0; i < block.Length; ++i)
             {
                 var (start, end, offset) = block[i];
-                if (seed >= start && seed <= end)
-                {
-                    seed += offset;
-                    i = block.Length;
-                }
+                if (seed < start || seed > end)
+                    continue;
+                seed += offset;
+                i = block.Length;
             }
         }
         return seed;

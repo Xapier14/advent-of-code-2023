@@ -4,6 +4,15 @@ AdventOfCode.SetYearAndDay(2023, 6);
 
 var input = AdventOfCode.GetInputLines();
 
+var sample =
+    """
+    Time:      7  15   30
+    Distance:  9  40  200
+    """.Split(Environment.NewLine);
+
+Utility.Assert(Part1, sample, 288u);
+Utility.Assert(Part2, sample, 71503u);
+
 Console.WriteLine("Part 1: {0}", Part1(input));
 Console.WriteLine("Part 2: {0}", Part2(input));
 return;
@@ -37,15 +46,14 @@ ulong Part1(string[] lines)
         var midPoint = (time + 1) / 2;
         ulong halfSpan = 0;
         ulong midPointOffset = 0;
-        ulong distanceCheck = 0;
+        ulong distanceCheck;
         do
         {
             distanceCheck = SimulateGame((ulong)time, (ulong)(midPoint + midPointOffset));
-            if (distanceCheck > distance)
-            {
-                midPointOffset++;
-                halfSpan = midPointOffset;
-            }
+            if (distanceCheck <= distance)
+                continue;
+            midPointOffset++;
+            halfSpan = midPointOffset;
         } while (distanceCheck > distance);
 
         var winningRaces = halfSpan * 2 - (ulong)((time + 1) % 2 != 0 ? 1 : 0);
@@ -63,7 +71,7 @@ ulong Part2(string[] lines)
     var midPoint = (time + 1) / 2;
     ulong halfSpan = 0;
     ulong midPointOffset = 0;
-    ulong distanceCheck = 0;
+    ulong distanceCheck;
     do
     {
         distanceCheck = SimulateGame(time, midPoint + midPointOffset);
@@ -82,8 +90,9 @@ ulong Part2(string[] lines)
 ulong Kern(int[] array)
 {
     var builder = new StringBuilder();
-    for (var i = 0; i < array.Length; ++i)
-        builder.Append(array[i].ToString());
+    foreach (var t in array)
+        builder.Append(t.ToString());
+
     return ulong.Parse(builder.ToString());
 }
 

@@ -1,5 +1,4 @@
-﻿using HtmlAgilityPack;
-using Xapier14.AdventOfCode;
+﻿using Xapier14.AdventOfCode;
 AdventOfCode.SetYearAndDay(2023, 22);
 
 var input = AdventOfCode.GetInputLines();

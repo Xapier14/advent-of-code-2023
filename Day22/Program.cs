@@ -38,7 +38,7 @@ SortedList<int, List<Brick>> MakeBricksFall(SortedList<int, List<Brick>> floatin
             currentLayer.AddRange(brickLayer);
             continue;
         }
-        // not first layer, check collision of brick while moving down
+        // not first layer, check collision of brick while moving up
         foreach (var brick in brickLayer)
         {
             var placementZ = 1;
@@ -75,7 +75,6 @@ SortedList<int, List<Brick>> MakeBricksFall(SortedList<int, List<Brick>> floatin
                 }
 
                 verticalCollision = true;
-                var collidingBricksCount = collidingBricks.Length;
                 var collidingBricksMax = collidingBricks.Select(collidingBrick => collidingBrick.Height).Max();
                 // if collision x or y, make checkZ the top part of the highest brick colliding with
                 checkZ += collidingBricksMax;
